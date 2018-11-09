@@ -1,0 +1,99 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage{lmodern}
+\usepackage{pstricks}
+\usepackage{pst-plot}
+\usepackage{pst-coil}
+% https://www.ctan.org/pkg/pst-solides3d
+\usepackage{pst-solides3d}
+
+\pagestyle{empty}
+\title{Hello World!}
+\author{Author's Name}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+
+\section{PStricks Picture}
+
+\begin{pspicture}(-5,-4)(5,4)
+\psgrid[subgriddiv=1,griddots=10]
+\psset{unit=1mm,linewidth=.25mm,hatchwidth=.2,hatchsep=1}
+
+\rput(10,10){
+
+\psline{->}(-20,0)(40,0)
+\psline{->}(0,-30)(0,40)
+\uput[ul](40,0){$x$}
+\uput[dr](0,40){$y$}
+\uput[ur](0,0){$O$}
+
+\psset{linewidth=.5mm}
+\pscircle(10,0){20}
+\psarc[linestyle=dashed,dash=3 2](15,0){15}{0}{180}
+\psarc[fillstyle=solid,fillcolor=lightgray](-5,0){5}{0}{180}
+
+\pscircle{1}
+\psframe[fillstyle=vlines,linecolor=white,linewidth=0](-3,-3)(3,-5)
+\psline(-.5,-.5)(-3,-3)(3,-3)(.5,-.5)
+
+\rput(5,20){ \psframe*[framearc=.5,linecolor=gray](0,0)(10,8) }
+\rput{90}(30,0){
+    \pscircle{1}	\psline(-.5,-.5)(-2,-2)(2,-2)(.5,-.5)
+    \psframe[fillstyle=vlines,linecolor=white,linewidth=0](-3,-3)(3,-5)
+    \pscircle(0,-2.5){.5} \psline(-3,-3)(3,-3)
+}
+
+% with pst-plot (functions given with reverse polish notation):
+\parametricplot[linestyle=dotted,plotpoints=200,arrows=->]{0}{540}{%
+% -15*exp(-.002*t)*cos(t) + 15,  15*exp(-.002*t)*(-.002*cos(t)-sin(t)) 
+    2.71828 .002 t mul neg exp -15 mul t cos mul 15 add	%
+    2.71828 -.002 t mul exp 15 mul t cos -.002 mul t sin sub mul
+}
+% with pst-coil:
+\pscoil[coilwidth=2,coilarm=2](10,-20)(10,-30)
+\rput(10,-30){
+    \psframe[fillstyle=hlines,linecolor=white,linewidth=0](-3,0)(3,-2)
+    \psline(-3,0)(3,0)
+}
+} %rput(10,10)
+
+\rput(-10,-30){
+
+\psset{viewpoint=1000 2000 1000,Decran=2500,lightsrc=0 100 100,linewidth=.1}
+\axesIIID[linewidth=.2,linecolor=green,arrowsize=5pt,arrowinset=0,
+	axisemph={\color{green}},labelsep=8pt](0,0,0)(40,40,35)
+
+\psLineIIID[linecolor=red](20,0,0)(20,25,0)(20,25,30)(20,25,0)(0,25,0)
+
+\psset{r=1,ngrid=4 10,linecolor=gray,action=none}
+\psset{solidmemory}
+\psSolid[object=cylindre,h=30,name=bAD,fillcolor=gray!50](20,0,0)
+\psSolid[object=cylindre,h=25,name=bDE,fillcolor=gray!50,RotX=-90](20,0,30)
+\psSolid[object=cylindre,h=20,name=bEB,fillcolor=gray!50,RotY=-90](20,25,30)
+\psSolid[object=cylindre,h=30,name=bBC,fillcolor=gray!50](0,25,0)
+\psSolid[object=fusion,action=draw**,base=bAD bDE bEB bBC]
+\composeSolid
+
+\psset{action=draw,linecolor=red}
+
+\psLineIIID[linecolor=blue,linewidth=.7]{->}(20,0,0)(30,10,-10)
+\psLineIIID(30,0,0)(30,10,0)(30,10,-10)(30,10,0)(20,10,0)
+\uput[ul](-22,-20){$F_1$}
+\psLineIIID[linecolor=blue,linewidth=.7]{<-}(20,0,30)(20,0,40)
+\uput[ur](-18,30){$M_2$}
+\psLineIIID[linecolor=blue,linewidth=.7]{->}(20,25,30)(30,25,30)
+\uput[dr](-15,13){$F_3$}
+\psLineIIID[linecolor=blue,linewidth=.7]{->}(0,25,30)(0,10,30)
+\uput[u](10,20){$F_2$}
+\psLineIIID[linecolor=blue,linewidth=.7]{->}(0,25,0)(5,20,10)
+\psLineIIID(5,25,0)(5,20,0)(5,20,10)(5,20,0)(0,20,0)
+\uput[u](5,0){$M_1$}
+
+} %rput(-10,-10)
+\end{pspicture}
+
+\section{So long...}
+... and thank you for the fish!
+
+\end{document}
