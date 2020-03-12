@@ -1,0 +1,39 @@
+\documentclass{beamer}
+%https://www.tug.org/teTeX/tetex-texmfdist/doc/latex/beamer/beameruserguide.pdf\\
+%https://www.overleaf.com/learn/latex/Beamer 
+\usepackage[utf8]{inputenc}
+ 
+%Information to be included in the title page:
+\title{Sample Beamer doc}
+\author{Anonymous}
+\institute{BME}
+\date{2018}
+\usetheme{Warsaw}
+
+\begin{document}
+ 
+\frame{\titlepage}
+ 
+\begin{frame}
+\frametitle{Sample frame title}
+This is a text in first frame. This is a text in first frame. This is a text in first frame.
+
+\begin{itemize}
+ \item<1-> Text visible on slide 1
+ \item<2-> Text visible on slide 2
+\end{itemize}
+
+\begin{itemize}[<+-| alert@+>]
+ \item Text visible on slide 3
+ \item Text visible on slide 4
+\end{itemize}
+
+\begin{block}{See more:}<+->
+\scriptsize
+https://www.tug.org/teTeX/tetex-texmfdist/doc/latex/beamer/beameruserguide.pdf\\
+https://www.overleaf.com/learn/latex/Beamer
+\end{block}
+
+\end{frame}
+ 
+\end{document}

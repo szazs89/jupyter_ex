@@ -1,7 +1,21 @@
 # jupyter_ex
-Example notebooks for Jupyter platform
+_Example notebooks for Jupyter platform_
 
-After logging in at jupyterhub (or starting your own jupyter-notebook) the browser window shows 3 tabs:
+After logging in at jupyterhub...
+now the UI of jupyterlab welcomes us.
+The Launcher Tab shows the available notebook formats, etc.
+
+The left-bar makes accessible
+* the filesystem tree,
+* the kernel and terminal management,
+* the git version controlling,
+* the command list,
+* the list of open tabs.
+
+The Logout is available from the _Hub_ menu.
+
+### (Obsoleted by jupyterlab UI)
+...(or starting your own jupyter-notebook) the browser window shows 3 tabs:
 
 |Files |Running |IPython Clusters |
 |------|--------|-----------------|
