@@ -118,3 +118,57 @@ $ maxima -l sbcl
 # lynx https://sourceforge.net/projects/maxima/files/Maxima-Linux/5.42.0-Linux/maxima-common_5.42.0-1_all.deb
 # lynx https://sourceforge.net/projects/maxima/files/Maxima-Linux/5.42.0-Linux/maxima-sbcl_5.42.0-1_amd64.deb
 # dpkg -i /usr/src/maxima*deb
+
+#
+# JULIA
+#
+# https://jupyterhub.readthedocs.io/en/stable/quickstart.html
+# 
+curl -sL https://deb.nodesource.com/setup_10.x > setup_10.x
+sh setup_10.x
+apt-get install nodejs
+
+pip3 install jupyterhub
+npm install -g configurable-http-proxy
+
+pip3 install ipyparallel sympy numpy
+jupyterhub --ip 152.66.33.249 --port 8080 &>> /var/log/jupyterhub.log &
+
+curl https://julialang-s3.julialang.org/bin/linux/x64/1.0/julia-1.0.1-linux-x86_64.tar.gz >julia-1.0.1-x86_64.tgz
+curl https://julialang-s3.julialang.org/bin/linux/x64/1.0/julia-1.0.1-linux-x86_64.tar.gz.asc >julia-1.0.1-x86_64.tgz.asc
+tar -C /opt/ -xvzf julia-1.0.1-x86_64.tgz
+rm -f /opt/julia && ln -s /opt/julia-1.0.1 /opt/julia
+
+julia
+> using Pkg
+> ENV["JUPYTER"]="jupyter"
+> Pkg.add("IJulia")
+
+tar -C /root/.julia -cvzf /opt/julia-1.0.1/compiled-v1.0.tgz compiled/v1.0
+cp -a /root/.local/share/jupyter/kernels/julia-1.0 /usr/local/share/jupyter/kernels/
+cp -a /root/.julia/packages/IJulia/0cLgR/src/kernel.jl /usr/local/share/jupyter/kernels/julia-1.0/
+nano /usr/local/share/jupyter/kernels/julia-1.0/kernel.json
+
+# ez feleslegesnek / nem mukodonek tunik...
+# az a biztos, ha jupyter terminalban lefuttatjuk a
+# Pkg.add("IJulia") ill. Pkg.build("IJulia") parancsokat...
+#
+cat <<EOF >/opt/bin/julia-1.0.1.sh
+#!/bin/bash --login
+
+export JULIA_PKGDIR="/home/${USER}/.julia"
+
+# Check if IJulia is already installed by the user
+if [ ! -d "${JULIA_PKGDIR}/compiled/v1.0/IJulia" ]; then
+  tar -C ${JULIA_PKGDIR} -xzf /opt/julia/compiled-v1.0.tgz
+  chown -R ${USER}.${USER} "${JULIA_PKGDIR}/compiled"
+fi
+
+/opt/bin/julia $*
+EOF
+
+# installing latex_envs
+#
+pip3 install jupyter_latex_envs
+jupyter-nbextension install --py latex_envs
+jupyter-nbextension enable --py latex_envs
