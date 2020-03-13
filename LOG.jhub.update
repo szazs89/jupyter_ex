@@ -1,0 +1,6 @@
+jupyter labextension list
+pip3 install -U jupyterlab-git
+pip3 install -U jupyterlab-latex
+pip3 install --force-reinstall 'jupyterlab==1.0.10'
+pip3 install --force-reinstall 'jupyterhub==1.0.0'
+jupyter labextension update --all

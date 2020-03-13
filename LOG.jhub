@@ -1,0 +1,120 @@
+debootstrap --variant=minbase buster /opt/chroot/buster http://ftp.hu.debian.org/debian
+
+## SCHROOT
+
+cat <<. >>/etc/schroot.conf
+[buster]
+type=directory
+description=Debian buster (testing)
+directory=/opt/chroot/buster
+groups=labor,master,tanszek
+profile=desktop
+.
+
+schroot -b -c buster -n buster-dir
+schroot -r -c buster-dir
+> apt install python3-pip acl git nano sudo man-db pwgen #python3-matplotlib ?
+> apt install octave gnuplot dvipng inkscape #scilab gcc maxima
+> apt install texlive-xetex texlive-pstricks texlive-lang-european pandoc
+
+# https://jupyterhub.readthedocs.io/en/stable/quickstart.html
+# 
+> curl -sL https://deb.nodesource.com/setup_10.x > setup_10.x
+> sh setup_10.x
+> apt-get install nodejs
+> npm install -g configurable-http-proxy
+> pip3 install jupyterhub jupyterlab
+> pip3 install matplotlib scipy sympy ipyparallel
+> pip3 install octave_kernel gnuplot_kernel scilab_kernel jupyter_c_kernel
+
+> jupyter labextension install @jupyterlab/hub-extension
+> echo "c.Spawner.cmd = ['jupyter-labhub']" >>jupyterhub_config.py
+> jupyter-labextension install @jupyterlab/latex
+> jupyter-labextension install @jupyterlab/git
+> pip3 install jupyterlab-latex jupyterlab-git
+> jupyter-serverextension enable --py jupyterlab_git --sys-prefix
+> sed -ri '/^FIRST_[UG]ID/s/1000/3000/' /etc/adduser.conf
+
+# https://rise.readthedocs.io/en/stable/
+> pip3 install RISE
+
+
+## SSL CERT
+
+apt install certbot
+certbot certonly
+echo " && rsync -avHSx /etc/letsencrypt /opt/chroot/buster/etc/" >>/etc/cron.d/certbot
+
+## SHARING
+
+# https://github.com/Calysto/notebook-extensions
+cd /opt/src
+git clone https://github.com/Calysto/notebook-extensions.git
+schroot -r -c buster-dir
+> cd /opt/src/notebook-extensions
+> jupyter-nbextension install calysto --system
+> jupyter nbextension enable calysto/document-tools/main --system
+> jupyter nbextension enable calysto/cell-tools/main --system
+> jupyter nbextension enable calysto/spell-check/main --system
+> jupyter nbextension enable calysto/publish/main --system
+> jupyter nbextension enable calysto/submit/main --system
+> jupyter nbextension enable calysto/annotate/main --system
+
+## STARTING
+
+#schroot -r -c buster-dir -- \
+#	jupyterhub --ip 152.66.33.249 --port 8080 &>> /var/log/jupyterhub.log &
+schroot -r -c buster-dir -- \
+	jupyterhub -f /root/jupyterhub_config.py &>> /var/log/jupyterhub.log &
+
+# for rotating logs:
+cat <<. >/etc/logrotate.d/jupyterhub
+/var/log/jupyterhub.log {
+	copytruncate
+	rotate 6
+	weekly
+	missingok
+	notifempty
+	delaycompress
+	compress
+}
+.
+# create /etc/rc.boot/jupyterhub script or /etc/systemd/service/jupyterhub(?)
+
+
+## MAXIMA
+
+git clone https://github.com/robert-dodier/maxima-jupyter /opt/src
+schroot -r -c buster-dir
+
+*** ECL try: FAILED ***
+> apt install maxima-sage cl-quicklisp
+# (buster)szazs: ecl -load quicklisp.lisp \
+#	-eval "(quicklisp-quickstart:install)" \
+#	-eval "(ql:add-to-init-file)"
+
+*** SBCL try: OK ***
+> apt install cl-quicklisp sbcl
+> cd /usr/src; apt-get source maxima
+> cd maxima-5.2.41
+> ./configure --enable-sbcl
+> make
+> make install
+(buster)szazs:$ sbcl -load quicklisp.lisp \
+	-eval "(quicklisp-quickstart:install)" \
+	-eval "(ql:add-to-init-file)"
+$ cp -a /opt/src/maxima-jupyter /tmp
+$ cd /tmp/maxima-jupyter
+$ mkdir -p binary/binary-sbcl
+$ maxima -l sbcl
+(%i1) :lisp (load "load-maxima-jupyter.lisp")
+(%i1) :lisp (sb-ext:save-lisp-and-die #P"binary/binary-sbcl/maxima-jupyter-exec" :executable t :toplevel 'maxima-jupyter:kernel-start-exec)
+> cd /tmp/maxima-jupyter
+> cp -a binary/binary-sbcl/maxima-jupyter-exec /usr/local/bin
+> python3 ./install-maxima-jupyter.py --exec=/usr/local/bin/maxima-jupyter-exec
+> chmod 2755 /usr/local/share/jupyter/kernel/maxima
+
+*** maxima-sbcl try: FAILED *** 
+# lynx https://sourceforge.net/projects/maxima/files/Maxima-Linux/5.42.0-Linux/maxima-common_5.42.0-1_all.deb
+# lynx https://sourceforge.net/projects/maxima/files/Maxima-Linux/5.42.0-Linux/maxima-sbcl_5.42.0-1_amd64.deb
+# dpkg -i /usr/src/maxima*deb
