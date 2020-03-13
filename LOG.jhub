@@ -35,8 +35,17 @@ schroot -r -c buster-dir
 > jupyter-serverextension enable --py jupyterlab_git --sys-prefix
 > sed -ri '/^FIRST_[UG]ID/s/1000/3000/' /etc/adduser.conf
 
-# https://rise.readthedocs.io/en/stable/
+jupyterhub --ip 152.66.33.249 --port 8080 &>> /var/log/jupyterhub.log &
+
+
+# https://rise.readthedocs.io/en/stable/ # was not ported to jupyterlab
 > pip3 install RISE
+#
+# installing latex_envs
+#
+pip3 install jupyter_latex_envs
+jupyter-nbextension install --py latex_envs
+jupyter-nbextension enable --py latex_envs
 
 
 ## SSL CERT
@@ -119,20 +128,8 @@ $ maxima -l sbcl
 # lynx https://sourceforge.net/projects/maxima/files/Maxima-Linux/5.42.0-Linux/maxima-sbcl_5.42.0-1_amd64.deb
 # dpkg -i /usr/src/maxima*deb
 
-#
-# JULIA
-#
-# https://jupyterhub.readthedocs.io/en/stable/quickstart.html
-# 
-curl -sL https://deb.nodesource.com/setup_10.x > setup_10.x
-sh setup_10.x
-apt-get install nodejs
 
-pip3 install jupyterhub
-npm install -g configurable-http-proxy
-
-pip3 install ipyparallel sympy numpy
-jupyterhub --ip 152.66.33.249 --port 8080 &>> /var/log/jupyterhub.log &
+## JULIA
 
 curl https://julialang-s3.julialang.org/bin/linux/x64/1.0/julia-1.0.1-linux-x86_64.tar.gz >julia-1.0.1-x86_64.tgz
 curl https://julialang-s3.julialang.org/bin/linux/x64/1.0/julia-1.0.1-linux-x86_64.tar.gz.asc >julia-1.0.1-x86_64.tgz.asc
@@ -166,9 +163,3 @@ fi
 
 /opt/bin/julia $*
 EOF
-
-# installing latex_envs
-#
-pip3 install jupyter_latex_envs
-jupyter-nbextension install --py latex_envs
-jupyter-nbextension enable --py latex_envs
