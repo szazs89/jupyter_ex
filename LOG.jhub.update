@@ -1,6 +1,40 @@
 jupyter labextension list
 pip3 install -U jupyterlab-git
 pip3 install -U jupyterlab-latex
-pip3 install --force-reinstall 'jupyterlab==1.0.10'
-pip3 install --force-reinstall 'jupyterhub==1.0.0'
+pip3 install --force-reinstall 'jupyterlab==1.2.7'
+pip3 install --force-reinstall 'jupyterhub==1.1.0'
 jupyter labextension update --all
+jupyter lab build
+
+# pip3 list |grep jupyter[hl] 
+jupyterhub         1.1.0     
+jupyterlab         1.2.7     
+jupyterlab-git     0.9.0     
+jupyterlab-latex   2.0.0     
+jupyterlab-server  1.0.7     
+
+# jupyter-labextension list
+JupyterLab v1.2.7
+Known labextensions:
+   app dir: /usr/local/share/jupyter/lab
+        @jupyterlab/git v0.9.0  enabled  OK
+        @jupyterlab/latex v1.0.0  enabled  OK
+        nbdime-jupyterlab v1.0.0  enabled  OK
+
+# jupyter-serverextension list
+config dir: /usr/local/etc/jupyter
+    ipyparallel.nbextension  enabled 
+    - Validating...
+      ipyparallel.nbextension  OK
+    jupyterlab  enabled 
+    - Validating...
+      jupyterlab 1.2.7 OK
+    jupyterlab_git  enabled 
+    - Validating...
+      jupyterlab_git  OK
+    jupyterlab_latex  enabled 
+    - Validating...
+      jupyterlab_latex 2.0.0 OK
+    nbdime  enabled 
+    - Validating...
+      nbdime 2.0.0 OK
